@@ -1,7 +1,7 @@
 // frontend/lib/api.ts
 import axios from 'axios';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+const API_BASE ='https://job-poster-p6bq.onrender.com';
 
 console.log('API Base URL:', API_BASE);
 
