@@ -107,9 +107,9 @@ export default function CreateJobForm({ onClose }: { onClose?: () => void }) {
 
   return (
     <Container size="md" px={0}>
-      <Paper radius="xl" withBorder p="xl">
+      
         <Stack gap="xl">
-          <Title order={3} text-align="center">Create Job Opening</Title>
+          <Title order={3} style={{ textAlign: 'center' }}>Create Job Opening</Title>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack gap="lg">
@@ -258,7 +258,7 @@ export default function CreateJobForm({ onClose }: { onClose?: () => void }) {
             </Stack>
           </form>
         </Stack>
-      </Paper>
+
     </Container>
   );
 }

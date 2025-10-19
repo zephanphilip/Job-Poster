@@ -24,11 +24,11 @@ type Props = {
 };
 
 const links = [
-  { link: '/', label: 'Home' },
+  { link: '/jobs', label: 'Home' },
   { link: '/jobs', label: 'Find Jobs' },
-  { link: '/talents', label: 'Find Talents' },
-  { link: '/about', label: 'About us' },
-  { link: '/testimonials', label: 'Testimonials' },
+  { link: '/jobs', label: 'Find Talents' },
+  { link: '/jobs', label: 'About us' },
+  { link: '/jobs', label: 'Testimonials' },
 ];
 
 export default function Navigation({ onOpenCreate }: Props) {
@@ -45,11 +45,19 @@ export default function Navigation({ onOpenCreate }: Props) {
       <Container size="xl" className="navbar-container">
         <Box className="nav-pill">
           <Group align="center" justify="space-between" className="nav-pill-inner" wrap="nowrap">
-            <Link href="/" className="nav-left">
-              <Box className="logo-wrap" aria-hidden>
-                <IconBriefcase size={26} className="logo-icon" />
-              </Box>
-            </Link>
+          <Link href="/" className="nav-left">
+            <Box className="logo-wrap" aria-hidden>
+              <img
+                src="http://cybermindworks.com/images/cmwlogo.svg"
+                alt="Logo"
+                width={36}
+                height={36}
+                className="logo-icon"
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
+            </Box>
+          </Link>
+
 
             <Group gap={28} className="nav-center">
               {navLinks}
@@ -57,12 +65,12 @@ export default function Navigation({ onOpenCreate }: Props) {
 
             <Group gap={12} className="nav-right" align="center">
               {onOpenCreate ? (
-                <Button onClick={onOpenCreate} className="create-job-btn" radius="md">
+                <Button onClick={onOpenCreate} className="create-job-btn" radius="lg">
                  
                   Create Jobs
                 </Button>
               ) : (
-                <Button component={Link} href="/jobs/create" className="create-job-btn" radius="md">
+                <Button component={Link} href="/jobs/create" className="create-job-btn" radius="lg">
                   
                   Create Jobs
                 </Button>

@@ -6,6 +6,7 @@ import {
   IconBuilding,
   IconExternalLink,
 } from '@tabler/icons-react';
+import JobMeta from './JobMeta';
 
 interface Job {
   id: string;
@@ -52,7 +53,7 @@ export default function JobCard({ job, onApply }: JobCardProps) {
   return (
     <Card className="job-card" padding={0} radius="md" withBorder>
       <div className="card-stack">
-        <Group justify="space-between" align="flex-start" style={{ marginBottom: 4 }}>
+        <Group justify="space-between" align="flex-start">
           <Box className="company-logo">
             {job.companyLogo ? (
               <img src={job.companyLogo} alt={job.companyName} />
@@ -64,25 +65,7 @@ export default function JobCard({ job, onApply }: JobCardProps) {
           <div className="time-pill">{getTimeAgo(job.createdAt)}</div>
         </Group>
 
-        <h3 className="job-title">{job.title}</h3>
-
-        <div className="job-meta">
-          <span className="meta-item">
-            👤 {job.experience}
-          </span>
-
-          <span className="dot">•</span>
-
-          <span className="meta-item">
-            🏢 {job.workmode}
-          </span>
-
-          <span className="dot">•</span>
-
-          <span className="meta-item">
-            💰 ₹{job.salaryRange}
-          </span>
-        </div>
+         <JobMeta job={job} />
 
         <ul className="job-bullets">
           <li>

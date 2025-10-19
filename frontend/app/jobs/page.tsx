@@ -12,7 +12,7 @@ import {
   RangeSlider,
   Divider
 } from '@mantine/core';
-import { IconSearch, IconMapPin, IconBriefcase } from '@tabler/icons-react';
+import { IconSearch, IconMapPin, IconBriefcase,IconBroadcast } from '@tabler/icons-react';
 import Layout from '../../components/Layout';
 import JobCard from '../../components/JobCard';
 import { api } from '../../lib/api';
@@ -40,6 +40,25 @@ export default function JobsPage() {
   const [locationFilter, setLocationFilter] = useState('');
   const [jobTypeFilter, setJobTypeFilter] = useState('');
   const [salaryRange, setSalaryRange] = useState<[number, number]>([50, 80]); // in 'k'
+
+  // Helper: parse various salary formats into 'k' (thousands)
+  const parseSalaryK = (salaryStr?: string | null): number | null => {
+    if (!salaryStr) return null;
+    try {
+
+      // remove currency symbols, commas, whitespace etc.
+      const cleaned = String(salaryStr).replace(/[^0-9.\-]/g, '');
+      if (!cleaned) return null;
+      const num = Number(cleaned)/12; // convert annual to monthly
+      
+      if (Number.isNaN(num)) return null;
+      // If your stored salary is already in units of Rs (e.g. 6400000),
+      // convert to 'k' by dividing by 1000.
+      return Math.round(num / 1000);
+    } catch {
+      return null;
+    }
+  };
 
   // Fetch jobs from backend
   const fetchJobs = useCallback(async () => {
@@ -77,14 +96,28 @@ export default function JobsPage() {
     };
   }, [fetchJobs]);
 
-  // Filter jobs
+  // Filter jobs (includes salary filtering using slider values in 'k')
   const filteredJobs = jobs.filter((job) => {
+    const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.companyName.toLowerCase().includes(searchQuery.toLowerCase());
+      !q ||
+      job.title.toLowerCase().includes(q) ||
+      job.companyName.toLowerCase().includes(q);
+
     const matchesLocation = !locationFilter || job.location === locationFilter;
     const matchesType = !jobTypeFilter || job.jobType === jobTypeFilter;
-    return matchesSearch && matchesLocation && matchesType;
+
+    // Salary filter: slider values are in 'k' (e.g. 50 === 50k).
+    // parseSalaryK returns salary in 'k' or null if not available.
+    const jobSalaryK = parseSalaryK(job.salaryRange);
+    const [minK, maxK] = salaryRange;
+
+    // If job has a numeric salary, require it to be within [minK, maxK].
+    // If salary not provided or unparseable, keep the job visible (change to `false` to exclude instead).
+    const matchesSalary =
+      jobSalaryK === null ? true : jobSalaryK >= minK && jobSalaryK <= maxK;
+
+    return matchesSearch && matchesLocation && matchesType && matchesSalary;
   });
 
   return (
@@ -114,7 +147,7 @@ export default function JobsPage() {
               <Select
                 placeholder="Preferred Location"
                 data={[
-                  { value: '', label: 'All Locations' },
+                  { value: '', label: 'Preferred Locations' },
                   { value: 'Remote', label: 'Remote' },
                   { value: 'Bangalore', label: 'Bangalore' },
                   { value: 'Mumbai', label: 'Mumbai' },
@@ -138,7 +171,7 @@ export default function JobsPage() {
               <Select
                 placeholder="Job type"
                 data={[
-                  { value: '', label: 'All Types' },
+                  { value: '', label: 'Job Types' },
                   { value: 'FullTime', label: 'Full Time' },
                   { value: 'PartTime', label: 'Part Time' },
                   { value: 'Contract', label: 'Contract' },
@@ -199,14 +232,13 @@ export default function JobsPage() {
         ) : (
           <Grid gutter="xl" className="jobs-grid-mantine">
             {filteredJobs.map((job, index) => (
-  <Grid.Col
-    key={job.id || `${job.title}-${index}`}
-    span={{ base: 12, sm: 6, md: 6, lg: 4 }}
-  >
-    <JobCard job={job} onApply={(job) => console.log('Apply to:', job.title)} />
-  </Grid.Col>
-))}
-
+              <Grid.Col
+                key={job.id || `${job.title}-${index}`}
+                span={{ base: 12, sm: 6, md: 6, lg: 4 }}
+              >
+                <JobCard job={job} onApply={(job) => console.log('Apply to:', job.title)} />
+              </Grid.Col>
+            ))}
           </Grid>
         )}
 

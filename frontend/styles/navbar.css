@@ -50,13 +50,10 @@
 }
 
 .logo-wrap {
-  background: linear-gradient(135deg, #f97316, #8b5cf6); /* slightly colorful */
-  padding: 10px;
-  border-radius: 12px;
+  padding: 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 18px rgba(15,23,42,0.06);
 }
 .logo-icon { color: white; }
 
@@ -101,7 +98,7 @@
 
 /* purple create button */
 .create-job-btn {
-  background: linear-gradient(90deg, #a855f7, #7c3aed);
+  background: linear-gradient(90deg, #7913d8, #7c3aed);
   color: #fff;
   display: inline-flex;
   align-items: center;
