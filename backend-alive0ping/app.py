@@ -4,9 +4,17 @@ import time
 import json
 import logging
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import requests
 from flask import Flask, jsonify
+
+# Ensure local timezone is Asia/Kolkata for any library that uses the C locale TZ
+os.environ.setdefault("TZ", "Asia/Kolkata")
+try:
+    time.tzset()
+except Exception:
+    # time.tzset may not exist on some platforms (Windows). Render/Linux supports it.
+    pass
 
 # ----- config from env -----
 URL = os.getenv("PING_URL")
@@ -16,11 +24,27 @@ INTERVAL_MIN = int(os.getenv("PING_INTERVAL_MIN", "5"))  # minutes
 TIMEOUT = int(os.getenv("PING_TIMEOUT", "10"))
 RETRIES = int(os.getenv("PING_RETRIES", "2"))
 RETRY_BACKOFF = float(os.getenv("PING_RETRY_BACKOFF", "2"))
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-# ----- logging -----
-logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s %(levelname)s %(message)s")
+# ----- timezone for timestamps (IST) -----
+IST = timezone(timedelta(hours=5, minutes=30))
+
+# ----- logging setup: IST timestamps, readable format -----
+class ISTFormatter(logging.Formatter):
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, IST)
+        if datefmt:
+            return dt.strftime(datefmt)
+        # default format
+        return dt.strftime("%Y-%m-%d %H:%M:%S %z")
+
 logger = logging.getLogger("pinger")
+logger.setLevel(LOG_LEVEL)
+handler = logging.StreamHandler()
+formatter = ISTFormatter(fmt="%(asctime)s | %(levelname)-5s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S %z")
+handler.setFormatter(formatter)
+logger.handlers = [handler]
+logger.propagate = False
 
 def load_headers():
     if not HEADERS_JSON:
@@ -46,7 +70,7 @@ def do_request():
         try:
             resp = requests.request(METHOD, URL, headers=HEADERS, timeout=TIMEOUT)
             logger.info("Ping %s %s -> %s (%d)", METHOD, URL, resp.reason, resp.status_code)
-            _health["last_ping"] = datetime.utcnow().isoformat() + "Z"
+            _health["last_ping"] = datetime.now(IST).isoformat()
             _health["last_status"] = resp.status_code
             _health["last_error"] = None
             _health["total_pings"] += 1
@@ -69,12 +93,12 @@ def pinger_loop():
     interval_seconds = INTERVAL_MIN * 60
     logger.info("Starting pinger -> %s every %d minutes", URL, INTERVAL_MIN)
     while True:
-        start = datetime.utcnow()
+        start = datetime.now(IST)
         try:
             do_request()
-        except Exception as e:
-            logger.exception("Unhandled error in pinger loop: %s", e)
-        elapsed = (datetime.utcnow() - start).total_seconds()
+        except Exception:
+            logger.exception("Unhandled error in pinger loop")
+        elapsed = (datetime.now(IST) - start).total_seconds()
         to_sleep = max(0, interval_seconds - elapsed)
         logger.debug("Sleeping %.1f seconds", to_sleep)
         time.sleep(to_sleep)
@@ -88,16 +112,20 @@ def root():
 
 @app.route("/health", methods=["GET"])
 def health():
-    # simple health response
     return jsonify(_health)
 
-if __name__ == "__main__":
-    # start background thread
+# Start the pinger thread once (safe for import under gunicorn or direct run)
+def start_pinger_thread_once():
+    if getattr(start_pinger_thread_once, "_started", False):
+        return
     t = threading.Thread(target=pinger_loop, daemon=True)
     t.start()
+    start_pinger_thread_once._started = True
+    logger.info("Background pinger thread started")
 
-    # use port from env (Render sets PORT)
+start_pinger_thread_once()
+
+if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
-    logger.info("Starting web server on port %d", port)
-    # Use Flask built-in server for simplicity (Render will run via gunicorn if you prefer)
+    logger.info("Starting web server on port %d (development mode)", port)
     app.run(host="0.0.0.0", port=port)
