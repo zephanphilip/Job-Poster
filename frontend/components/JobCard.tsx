@@ -12,7 +12,7 @@ interface Job {
   id: string;
   title: string;
   companyName: string;
-  companyLogo?: string; // optional URL if available
+  companyLogo?: string; 
   location: string;
   jobType: string;
   salaryRange: string;

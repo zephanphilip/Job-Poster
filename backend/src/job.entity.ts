@@ -1,4 +1,4 @@
-// backend/src/job.entity.ts
+
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -16,7 +16,7 @@ export class Job {
   location: string;
 
   @Column()
-  jobType: string; // Full-time, Part-time, Contract, Internship
+  jobType: string; 
 
   @Column()
   salaryRange: string;

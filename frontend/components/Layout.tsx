@@ -13,10 +13,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Box>
       <Navigation onOpenCreate={() => setCreateOpen(true)} />
 
-      {/* Page content */}
       <main>{children}</main>
 
-      {/* Create Job Modal (use overlayProps instead of overlayBlur/overlayOpacity) */}
       <Modal
         opened={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -24,15 +22,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         radius="lg"
         padding={0}
         withCloseButton={false}
-        // Use overlayProps to customize overlay safely:
         overlayProps={{
-          // recommended: set a backdrop color + blur using CSS style
           style: {
-            backgroundColor: 'rgba(2,6,23,0.45)', // darken background
-            backdropFilter: 'blur(6px)', // visual blur
+            backgroundColor: 'rgba(2,6,23,0.45)', 
             WebkitBackdropFilter: 'blur(6px)'
           },
-          // you may also pass any other DOM attributes for the overlay here
         }}
       >
         <Paper radius="lg" p="xl">

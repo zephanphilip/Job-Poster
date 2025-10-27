@@ -1,18 +1,17 @@
-// components/JobMeta.tsx
+
 import React from 'react';
 import { Group, Text } from '@mantine/core';
 import { IconUserPlus, IconBuilding, IconStack } from '@tabler/icons-react';
 
 type Job = {
   title: string;
-  experience?: string;     // e.g. "1-3 yr Exp"
-  workmode?: string;       // e.g. "Onsite"
-  salaryRange?: string;    // e.g. "12000", "12000-24000", "500000"
+  experience?: string;     
+  workmode?: string;       
+  salaryRange?: string;    
 };
 
 function extractFirstNumber(input?: string): number | null {
   if (!input) return null;
-  // remove commas, k/K, ₹, $, whitespace, then find first continuous digits
   const cleaned = input.replace(/,|\s|₹|\$|k/gi, '');
   const m = cleaned.match(/-?(\d+(\.\d+)?)/);
   if (!m) return null;
@@ -25,18 +24,10 @@ function toLpaDisplay(raw?: string): string | undefined {
   if (n === null) return undefined;
 
   if (n >= 100000) {
-    // input looks like full rupees (e.g. 500000 -> 5 LPA)
     const val = Math.round(n / 100000);
     return `${val} LPA`;
   }
 
-  // if (n >= 1000) {
-  //   // likely given as thousands (e.g. 12000 -> 12 LPA)
-  //   const val = Math.round(n / 1000);
-  //   return `${val} LPA`;
-  // }
-
-  // tiny value: return as is (or convert to LPA with decimals)
   const val = +(n / 100000).toFixed(2);
   return `${val} LPA`;
 }

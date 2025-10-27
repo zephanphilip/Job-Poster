@@ -1,4 +1,4 @@
-// backend/src/jobs.controller.ts
+
 import { Controller, Get, Post, Body, Query, UsePipes, ValidationPipe, Param } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
@@ -33,7 +33,6 @@ export class JobsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    // Check if the id is a valid UUID, if not, return 404
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
       return { error: 'Invalid job ID' };

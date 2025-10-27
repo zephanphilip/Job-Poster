@@ -1,4 +1,4 @@
-// backend/src/dto/create-job.dto.ts
+
 import { IsNotEmpty, IsString, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateJobDto {

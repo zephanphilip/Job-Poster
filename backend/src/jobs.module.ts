@@ -1,4 +1,4 @@
-// backend/src/jobs.module.ts
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from './job.entity';

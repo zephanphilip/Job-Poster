@@ -92,9 +92,8 @@ export default function CreateJobForm({ onClose }: { onClose?: () => void }) {
         color: 'green'
       });
 
-      // close modal and refresh jobs on the background page
       onClose?.();
-      try { router.refresh(); } catch (e) { /* ignore if not available */ }
+      try { router.refresh(); } catch (e) { }
     } catch (err) {
       console.error('API Error:', err);
       showNotification({

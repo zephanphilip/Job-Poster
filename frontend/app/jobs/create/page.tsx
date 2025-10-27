@@ -41,15 +41,12 @@ export default function CreateJob() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // Safely convert applicationDeadline to ISO string
       let isoDeadline: string | undefined = undefined;
       
       if (data.applicationDeadline) {
-        // Check if it's already a Date object
         if (data.applicationDeadline instanceof Date && !isNaN(data.applicationDeadline.getTime())) {
           isoDeadline = data.applicationDeadline.toISOString();
         } 
-        // If it's a string, convert to Date first
         else if (typeof data.applicationDeadline === 'string') {
           const parsedDate = new Date(data.applicationDeadline);
           if (!isNaN(parsedDate.getTime())) {
@@ -99,14 +96,12 @@ export default function CreateJob() {
           withBorder
         >
           <Stack gap="xl">
-            {/* Modal Title */}
             <Title order={2} className="modal-title">
               Create Job Opening
             </Title>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack gap="lg">
-                {/* Row 1: Job Title + Company Name */}
                 <Grid>
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <TextInput 
@@ -128,7 +123,6 @@ export default function CreateJob() {
                   </Grid.Col>
                 </Grid>
 
-                {/* Row 2: Location + Job Type */}
                 <Grid>
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <Controller
@@ -176,7 +170,6 @@ export default function CreateJob() {
                   </Grid.Col>
                 </Grid>
 
-                {/* Row 3: Salary Range + Application Deadline */}
                 <Grid>
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <Text size="sm" fw={500} mb={5}>Salary Range</Text>
@@ -203,7 +196,6 @@ export default function CreateJob() {
                           placeholder="Select date"
                           value={field.value}
                           onChange={(date) => {
-                            // Ensure we're storing a proper Date object
                             field.onChange(date);
                           }}
                           size="md"
@@ -215,7 +207,6 @@ export default function CreateJob() {
                   </Grid.Col>
                 </Grid>
 
-                {/* Job Description */}
                 <Textarea 
                   label="Job Description" 
                   placeholder="Please share a description to let the candidate know more about the job role"
@@ -225,7 +216,6 @@ export default function CreateJob() {
                   size="md"
                 />
 
-                {/* Optional: Requirements */}
                 <Textarea 
                   label="Requirements (Optional)" 
                   placeholder="List key requirements and qualifications"
@@ -234,7 +224,6 @@ export default function CreateJob() {
                   size="md"
                 />
 
-                {/* Optional: Responsibilities */}
                 <Textarea 
                   label="Responsibilities (Optional)" 
                   placeholder="Describe main responsibilities for this role"
@@ -243,7 +232,6 @@ export default function CreateJob() {
                   size="md"
                 />
 
-                {/* Footer Buttons */}
                 <div className="modal-footer">
                   <Button 
                     variant="outline"
